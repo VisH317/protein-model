@@ -1,3 +1,4 @@
 ProteinKG25
 **/*.zip
 **/*.obo
+**/*.pkl
