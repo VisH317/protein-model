@@ -2,9 +2,11 @@ import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
 import lightning as L
+from base_models.transformer import BertModel, text_model_id, prot_model_id
+from typing import Mapping, Any
 
 
-class Transform(nn.Module):
+class ProtCLIP(nn.Module):
     def __init__(self, d_model: int, d_text: int, d_clip: int, d_inter: int = None):
         super().__init__()
 
@@ -29,11 +31,12 @@ class Transform(nn.Module):
         return F.sigmoid(prot @ text)
 
 
-class FullModel(L.LightningModule):
-    def __init__(self, prot_model, text_model, clip_transform):
-        self.prot_model = prot_model
-        self.text_model = text_model
+class ProtCLIPLit(L.LightningModule):
+    def __init__(self, clip_transform, lr: float = 3e-4):
+        self.prot_model = BertModel(prot_model_id)
+        self.text_model = BertModel(text_model_id)
         self.clip_transform = clip_transform
+        self.lr = lr
 
     def training_step(self, batch, batch_idx):
         prot, text, target = batch
@@ -41,11 +44,20 @@ class FullModel(L.LightningModule):
         text = self.text_model(text)
         clip_out = self.clip_transform(prot, text)
         loss = F.mse_loss(clip_out, target)
-        self.log("train loss: ", loss)
+        self.log("train loss: ", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
 
         return loss
     
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(), lr=3e-4)
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
         return optimizer
+    
+    def validation_step(self, batch) -> Tensor | Mapping[str, Any] | None:
+        prot, text, target = batch
+        prot = self.prot_model(prot)
+        text = self.text_model(text)
+        clip_out = self.clip_transform(prot, text)
+
+        loss = F.mse_loss(clip_out, target)
+        self.log("val loss: ", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
 

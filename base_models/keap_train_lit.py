@@ -42,8 +42,10 @@ def train_keap(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     train_loader = DataLoader(train_data, shuffle=True, batch_size=config["batch_size"], collate_fn=collate)
     val_loader = DataLoader(val_data, shuffle=True, batch_size=config["val_batch_size"], collate_fn=collate)
 
+    # fit model
     trainer = Trainer(max_epochs=4, profiler="simple", accumulate_grad_batches=4)
     trainer.fit(keap_lit, train_dataloaders=train_loader, val_dataloaders=val_loader)
 
+    # save parameters
     torch.save(keap.state_dict(), "keap.pth")
     torch.save(lmhead.state_dict(), "lmhead.pth")
