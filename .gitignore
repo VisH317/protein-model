@@ -2,3 +2,4 @@ ProteinKG25
 **/*.zip
 **/*.obo
 **/*.pkl
+**/__pycache__

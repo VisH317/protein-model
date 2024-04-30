@@ -19,3 +19,10 @@ class RMSNorm(nn.Module):
         if self.affine_transform: out = out * self.gamma + self.beta
         return out
 
+class LMHead(nn.Module):
+    def __init__(self, d_in: int, d_out: int) -> None:
+        super().__init__()
+        self.lin = nn.Linear(d_in, d_out)
+    
+    def forward(self, input: Tensor) -> Tensor:
+        return self.lin(input)

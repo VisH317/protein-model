@@ -9,8 +9,8 @@ class BertModel:
         self.prot_tokenizer = AutoTokenizer.from_pretrained(model_id)
         self.prot_model = AutoModel.from_pretrained(model_id)
     
-    def forward(self, input: str):
-        tokens = self.prot_tokenizer(input)
+    def __call__(self, input: str):
+        tokens = self.prot_tokenizer(input, return_tensors="pt") # TODO: Set up attention mask here
         output = self.prot_model(**tokens)
         return output.logits
     

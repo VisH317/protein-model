@@ -13,8 +13,9 @@
 
 
 **KeAP-RSA Model Timeline (non-graph connected)**
-- [ ] Create the PKG25 dataloader
-- [ ] Clone KeAP model, train on PKG25 data
+- [X] Create the PKG25 dataloader
+- [ ] Clone KeAP model, 
+- [ ] train on PKG25 data
 - [ ] Create structure-function vector database
 - [ ] Set up RSA retriever using dense similarity search
 - [ ] Set up transformer architecture with RSA-augmented sequences
@@ -22,8 +23,9 @@
 - [ ] Train
 
 **ProtCLIP Timeline**
-- [ ] Create PKG25 dataloader
-- [ ] Find a Med LM and clone or find an API to call from
-- [ ] Find a protein model and clone to run in the model training (small version)
-- [ ] Set up CLIP objective module + lightning training loop
+- [X] Create PKG25 dataloader
+- [X] Find a Med LM and clone or find an API to call from
+- [X] Find a protein model and clone to run in the model training (small version)
+- [X] Set up CLIP objective module + lightning training loop
+- [ ] set up full training loop
 - [ ] Train
