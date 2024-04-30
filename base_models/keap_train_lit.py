@@ -1,6 +1,6 @@
 import torch
 from torch.utils.data import DataLoader
-from data.proteinkg import ProteinKG25
+from data.proteinkg import ProteinKG25, collate
 from base_models.keap_trainer import KeAPL, LMHead, KeAP
 from typing import Dict, Any
 from lightning import Trainer
@@ -39,8 +39,8 @@ def train_keap(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     val_data = ProteinKG25(data_config["val_data_file"])
 
     # create loaders
-    train_loader = DataLoader(train_data, shuffle=True, batch_size=config["batch_size"])
-    val_loader = DataLoader(val_data, shuffle=True, batch_size=config["val_batch_size"])
+    train_loader = DataLoader(train_data, shuffle=True, batch_size=config["batch_size"], collate_fn=collate)
+    val_loader = DataLoader(val_data, shuffle=True, batch_size=config["val_batch_size"], collate_fn=collate)
 
     trainer = Trainer(max_epochs=4, profiler="simple", accumulate_grad_batches=4)
     trainer.fit(keap_lit, train_dataloaders=train_loader, val_dataloaders=val_loader)
