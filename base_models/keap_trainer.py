@@ -11,7 +11,7 @@ from typing import Mapping, Tuple, Dict, Any
 
 
 class KeAPL(L.LightningModule):
-    def __init__(self, keap: KeAP, lmhead: LMHead, lr: float = 3e-4):
+    def __init__(self, keap: KeAP, lmhead: LMHead | None = None, lr: float = 3e-4):
         super().__init__()
 
         self.prot = BertModel(prot_model_id)
@@ -33,8 +33,7 @@ class KeAPL(L.LightningModule):
         att = self.text(att)
     
         y = self.keap(prot, rel, att)
-        return y
-    
+        return y        
 
     # prot: b x l_prot x d_prot
     # att: b x l_att x d_att

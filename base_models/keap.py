@@ -7,16 +7,17 @@ from base_models.utils import RMSNorm
 # modules: cross attention block, keap encoder, keap, LMhead
 
 class CrossAttention(nn.Module):
-    def __init__(self, d_prot: int, d_text: int, d_attn: int, d_out: int = None, dropout_p: float = 0.05):
+    def __init__(self, d_prot: int, d_text: int, n_heads: int, d_attn: int, d_out: int = None, dropout_p: float = 0.05):
         super().__init__()
 
-        self.w_Q = nn.Linear(d_prot, d_attn)
-        self.w_KV = nn.Linear(d_text, 2 * d_attn)
+        self.w_Q = nn.Linear(d_prot, d_attn * n_heads)
+        self.w_KV = nn.Linear(d_text, 2 * d_attn * n_heads)
         self.w_O = nn.Linear(d_attn, d_out if d_out is not None else d_prot)
 
         self.norm1 = RMSNorm()
         self.norm2 = RMSNorm()
 
+        self.n_heads = n_heads
         self.d_attn = d_attn
         self.dropout_p = dropout_p
 
@@ -25,9 +26,11 @@ class CrossAttention(nn.Module):
     # text_input: b x l_text x d_text
     # returns: b x l_prot x d_out
     def forward(self, prot_input: Tensor, text_input) -> Tensor:
+        b, l, d = prot_input.size()
+
         prot_norm = self.norm1(prot_input)
-        Q = self.w_Q(prot_norm)
-        KV = self.w_KV(self.norm2(text_input))
+        Q = self.w_Q(prot_norm).reshape(b, l, self.n_heads, self.d_attn)
+        KV = self.w_KV(self.norm2(text_input)).reshape(b, l, self.n_heads, self.d_attn * 2)
         K, V = torch.tensor_split(KV, (self.d_attn, self.d_attn), dim=-1)
 
         O = F.scaled_dot_product_attention(Q, K, V, dropout_p=self.dropout_p) # TODO: setup attention mask
@@ -51,7 +54,7 @@ class MLP(nn.Module):
         
 
 class KeAPEncoder(nn.Module):
-    def __init__(self, d_hidden: int, d_attribute: int, d_relation: int, d_attn: int, d_ff: int | None = None, dropout_p: float = 0.05) -> None:
+    def __init__(self, d_hidden: int, d_attribute: int, d_relation: int, n_heads: int, d_attn: int, d_ff: int | None = None, dropout_p: float = 0.05) -> None:
         super().__init__()
         
         self.ca1 = CrossAttention(d_hidden, d_attribute, d_attn, d_hidden, dropout_p=dropout_p)
@@ -66,11 +69,11 @@ class KeAPEncoder(nn.Module):
 
 
 class KeAP(nn.Module):
-    def __init__(self, n_enc: int, d_prot: int, d_hidden: int, d_attribute: int, d_relation: int, d_attn: int, d_ff: int | None = None, dropout_p: float = 0.05) -> None:
+    def __init__(self, n_enc: int, d_prot: int, d_hidden: int, n_heads: int, d_attribute: int, d_relation: int, d_attn: int, d_ff: int | None = None, dropout_p: float = 0.05) -> None:
         super().__init__()
 
         self.embed = nn.Linear(d_prot, d_hidden)
-        self.enc = nn.ModuleList([KeAPEncoder(d_hidden, d_attribute, d_relation, d_attn, d_ff, dropout_p) for _ in range(n_enc)])
+        self.enc = nn.ModuleList([KeAPEncoder(d_hidden, d_attribute, d_relation, n_heads, d_attn, d_ff, dropout_p) for _ in range(n_enc)])
 
     def forward(self, input: Tensor) -> Tensor:
         x = self.embed(input)
