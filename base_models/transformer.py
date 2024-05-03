@@ -6,8 +6,8 @@ prot_model_id = "Rostlab/prot_bert"
 
 class BertModel:
     def __init__(self, model_id):
-        self.prot_tokenizer = AutoTokenizer.from_pretrained(model_id)
-        self.prot_model = AutoModel.from_pretrained(model_id)
+        self.prot_tokenizer = AutoTokenizer.from_pretrained(model_id, output_hidden_states=True)
+        self.prot_model = AutoModel.from_pretrained(model_id, output_hidden_states=True)
     
     def __call__(self, input: str):
         tokens = self.prot_tokenizer(input, return_tensors="pt") # TODO: Set up attention mask here
