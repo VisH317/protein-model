@@ -8,39 +8,37 @@ I am reaching out to researchers to help mentor me on this project from a biolog
 
 
 ## 1. Introduction
-Protein representation learning is a key task in today's medical landscape, and it can be used to architect new proteins for research and drug discovery purposes. Many lines of research have been pursued in the field of protein representation learning. Most of these methods revolve around representing a protein as a sequence and passing this embedded sequence information into a transformer. Models such as [ProtBERT](https://academic.oup.com/bioinformatics/article/38/8/2102/6502274) and [ESM2](https://www.biorxiv.org/content/10.1101/2022.12.21.521521v1) are effective models in this category.
+Protein representation learning is a key task in today's medical landscape, and it can be used to architect new proteins for research and drug discovery purposes. Many lines of research have been pursued in the field of protein representation learning. Most of these methods revolve around representing a protein as a sequence and passing this embedded sequence information into a transformer. Models such as *[ProtBERT](https://academic.oup.com/bioinformatics/article/38/8/2102/6502274)* and *[ESM2](https://www.biorxiv.org/content/10.1101/2022.12.21.521521v1)* are effective models in this category.
 
 ![ESMFold](esmfold.png)
-<p style="text-align: center; font-size: 12px"><em>Figure 1: A diagram of the popular ESMfold architecture, which uses the ESM2 protein model as a backbone for the structure prediction downstream tasks. The diagram depicts the inputs and outputs of the ESM2 model</em></p>
+***Figure 1:** A diagram of the popular ESMfold architecture, which uses the ESM2 protein model as a backbone for the structure prediction downstream tasks. The diagram depicts the inputs and outputs of the ESM2 model*
 
 After the use of transformers for protein modeling was introduced, augmentations to the original model were made to improve ability to inherently comprehend protein structures and functions, as well as how different proteins relate to each other. Two prominent methods include leveraging multiple sequence alignments (MSAs) or leveraging knowledge graph information.
 
 ### 1.1 MSA-based Methods
 
-A multiple sequence alignment consists of modifying a set of amino acids $S_A$ such that each sequence's length conforms to at least a specific length $L$. MSA-aligned sequences can be compared across similar positions to identify homologous structures in biological sequences. The [MSA transformer](https://proceedings.mlr.press/v139/rao21a.html) architecture uses a database of MSA sequences and processes them in a transformer using axial attention. Axial attention allows to compute relationships along the current sequence as well as along the same position in the MSA alignment. This provides information about relevant homologous structures and improved performance in stability and homology tasks.
+A multiple sequence alignment consists of modifying a set of amino acids $S_A$ such that each sequence's length conforms to at least a specific length $L$. MSA-aligned sequences can be compared across similar positions to identify homologous structures in biological sequences. The *[MSA transformer](https://proceedings.mlr.press/v139/rao21a.html)* architecture uses a database of MSA sequences and processes them in a transformer using axial attention. Axial attention allows to compute relationships along the current sequence as well as along the same position in the MSA alignment. This provides information about relevant homologous structures and improved performance in stability and homology tasks.
 
-A further development of this method involved using direct memory retrieval. The [RSA transformer](https://arxiv.org/abs/2302.12563) proved that alignment is not needed to provide relevant structure and homology information from similar sequences. Instead of using an MSA alignment, the RSA transformer architecture retrieves $k$ number of embedded sequence representations from the **Pfam** database. It then includes these retrieved protein sequences within the computation of the original target sequence to provide a more informed output.
+A further development of this method involved using direct memory retrieval. The *[RSA transformer](https://arxiv.org/abs/2302.12563)* proved that alignment is not needed to provide relevant structure and homology information from similar sequences. Instead of using an MSA alignment, the RSA transformer architecture retrieves $k$ number of embedded sequence representations from the **Pfam** database. It then includes these retrieved protein sequences within the computation of the original target sequence to provide a more informed output.
 
 ![RSA-Transformer](RSA.png)
-<p style="text-align: center; font-size: 12px"><em>Figure 2: A diagram of the RSA transformer, which retrieves relevant protein sequences from the Pfam database and parses them in parallel using ProtBERT. The outputs are pooled to create a robust protein representation</em></p>
+***Figure 2:** A diagram of the RSA transformer, which retrieves relevant protein sequences from the Pfam database and parses them in parallel using ProtBERT. The outputs are pooled to create a robust protein representation*
 
 RSA transformer has shown great results in structure-based protein tasks, such as stability and homology. However, function-based tasks, including protein-protein interaction and protein semantic embedding evaluation, did not show as striking performance. This might have occurred due to the lack of functional information that can be derived from raw sequences. 
 
 ### 1.2 Knowledge Graph-based Methods
 
-As an alternative to similar-sequence based protein modeling methods, knowledge graphs were leveraged to provide functional information to protein representation models. These models leveraged the Gene Ontology graph. This graph was augmented with protein relations in the [ProteinKG25](https://www.zjukg.org/project/ProteinKG25/) dataset. The ProteinKG25 dataset is a graph of protein sequences and functional information in text format. The [OntoProtein](https://arxiv.org/abs/2201.11147) model combines these representations using knowledge graph embedding and achieved state-of-the-art results on protein function-based tasks.
+As an alternative to similar-sequence based protein modeling methods, knowledge graphs were leveraged to provide functional information to protein representation models. These models leveraged the Gene Ontology graph. This graph was augmented with protein relations in the *[ProteinKG25](https://www.zjukg.org/project/ProteinKG25/)* dataset. The ProteinKG25 dataset is a graph of protein sequences and functional information in text format. The *[OntoProtein](https://arxiv.org/abs/2201.11147)* model combines these representations using knowledge graph embedding and achieved state-of-the-art results on protein function-based tasks.
 
-The [KeAP](https://openreview.net/forum?id=VbCMhg7MRmj) model improved on OntoProtein by combining the a triplet representation of a protein, relation, and attribute (a function or component) into one transformer model using cross attention. In this model, relations and attribute embeddings were computed using a foundation medical model, while protein model representations were computed using ProtBERT. This cross attention method showed state-of-the-art results and improved upon OntoProtein's methodologies.
+The *[KeAP](https://openreview.net/forum?id=VbCMhg7MRmj)* model improved on OntoProtein by combining the a triplet representation of a protein, relation, and attribute (a function or component) into one transformer model using cross attention. In this model, relations and attribute embeddings were computed using a foundation medical model, while protein model representations were computed using ProtBERT. This cross attention method showed state-of-the-art results and improved upon OntoProtein's methodologies.
 
 ![KeAP](keap.png)
-<p style="text-align: center; font-size: 12px"><em>Figure 3: A diagram of the KeAP model. This model embeds proteins using ProtBERT and relations and attribute text from the ProteinKG25 dataset using a medical-finetuned LM. These representations are combined using cross attention in the protein decoder model.</em></p>
+***Figure 3:** A diagram of the KeAP model. This model embeds proteins using ProtBERT and relations and attribute text from the ProteinKG25 dataset using a medical-finetuned LM. These representations are combined using cross attention in the protein decoder model.*
 
 While the KeAP model achieved state-of-the-art results in functional tasks that require global context (e.g. protein-protein interaction and protein semantic similarity), it did not make any improvements on its base model when it came to structural tasks, such as stability, homology, and binding affinity. 
 
-<p align="center">
-  <img src="keapres.png" alt="keapres" />
-</p>
-<p style="text-align: center; font-size: 12px"><em>Table 1: A results table from the KeAP paper. KeAP uses ProtBERT as a backbone for its predictions. This results table shows that KeAP provided no improvement over its backbone model despite its integration of relational and attribute information. This shows that it does not provide an advantage in structural tasks</em></p>
+![keapres](keapres.png)
+***Table 1:** A results table from the KeAP paper. KeAP uses ProtBERT as a backbone for its predictions. This results table shows that KeAP provided no improvement over its backbone model despite its integration of relational and attribute information. This shows that it does not provide an advantage in structural tasks*
 
 In addition, the KeAP model is bound to the ProteinKG25 knowledge graph, and is unable to predict information without a relevant attribute/function to compare it to. Data seen in the ProteinKG25 dataset is difficult to create for on-demand tasks such as drug discovery, which makes this model difficult to use in production.
 
@@ -54,7 +52,7 @@ This method improves on the KeAP architecture to provide more robust functional 
 While the KeAP model is only trained on one triplet in the protein knowledge graph, this method can allow the parsing of multiple relation and attribute triplets, and include protein sequences that share similar functions/attributes.
 
 ![ProtKEAPRSA](ProtKEAPRSA-Diagram.png)
-<p style="text-align: center; font-size: 12px"><em>Figure 4: A diagram of the proposed architecture. This architecture first embeds a protein using a base model (ProtBERT is used). The output from that is then projected into a query vector, which is used to retrieve relevant structure-function triplets from the ProteinKG25 database (embeddings created by KeAP). These representations are then combined in the final transformer layers using cross attention</em></p>
+***Figure 4:** A diagram of the proposed architecture. This architecture first embeds a protein using a base model (ProtBERT is used). The output from that is then projected into a query vector, which is used to retrieve relevant structure-function triplets from the ProteinKG25 database (embeddings created by KeAP). These representations are then combined in the final transformer layers using cross attention*
 
 This model only takes a protein as the input, and does not require a full triplet to run a protein prediction. The protein $x_p$ is first processed using a backbone model, such as ProtBERT. This generates the hidden states $h_p$, which are then combined through elementwise addition, a linear layer, and a tanh activation function to create a semantic representation $y_p$
 
