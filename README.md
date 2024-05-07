@@ -14,8 +14,8 @@
 
 **KeAP-RSA Model Timeline (non-graph connected)**
 - [X] Create the PKG25 dataloader
-- [ ] Clone KeAP model, 
-- [ ] train on PKG25 data
+- [X] Clone KeAP model, 
+- [X] train on PKG25 data
 - [ ] Create structure-function vector database
 - [ ] Set up RSA retriever using dense similarity search
 - [ ] Set up transformer architecture with RSA-augmented sequences
@@ -27,5 +27,18 @@
 - [X] Find a Med LM and clone or find an API to call from
 - [X] Find a protein model and clone to run in the model training (small version)
 - [X] Set up CLIP objective module + lightning training loop
-- [ ] set up full training loop
+- [X] set up full training loop
+- [ ] Test efficacy
 - [ ] Train
+
+
+**ProtKEAP Methods for Retrieval**
+- Default retriever method: RSA retriever + cross attention on pooler embeds
+- Proper structure + function combination - train on custom KeAP model
+  - RSA method - retrieve 5 relevant sequences, parse each sequence and weight the output
+  - Identical method for KeAP - retrieve KeAP, run on each triplet, weighted average triplet at output of the protein
+- Problem - need to convert from a protein space to a PRA space to integrate structure and function
+  - provided through a similar method through cross attention
+- alternative method - providing the sequences to parse using ProtBERT, + KeAP model
+- instead of plain retriever, use a graph-based retriever
+  - graph processing to get information to provide more information (need to check this as an alternative method)
