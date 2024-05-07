@@ -28,14 +28,18 @@ class ProtCLIP(nn.Module):
         prot = self.lin(input_prot)
         text = self.lin2(input_text)
 
-        return F.sigmoid(prot @ text)
+        return F.sigmoid(prot @ text.T)
 
 
 class ProtCLIPLit(L.LightningModule):
     def __init__(self, clip_transform, lr: float = 3e-4):
+        super().__init__()
+
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
         self.prot_model = BertModel(prot_model_id)
         self.text_model = BertModel(text_model_id)
-        self.clip_transform = clip_transform
+        self.clip_transform = clip_transform.to(device=device)
         self.lr = lr
 
     def training_step(self, batch, batch_idx):

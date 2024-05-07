@@ -16,8 +16,8 @@ default_config = {
 }
 
 default_data_config = {
-    "train_data_file": "data/proteinkg25_parsed_train.pkl",
-    "val_data_file": "data/proteinkg25_parsed_val.pkl",
+    "train_data_file": "./data/proteinkg25_parsed_train.pkl",
+    "val_data_file": "./data/proteinkg25_parsed_valid.pkl",
 }
 
 
@@ -30,8 +30,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     val_data = ProteinKG25(data_config["val_data_file"])
 
     # create loaders
-    train_loader = DataLoader(train_data, shuffle=True, batch_size=config["batch_size"], collate_fn=collate_clip)
-    val_loader = DataLoader(val_data, shuffle=True, batch_size=config["val_batch_size"], collate_fn=collate_clip)
+    train_loader = DataLoader(train_data, shuffle=False, num_workers=8, batch_size=config["batch_size"], collate_fn=collate_clip)
+    val_loader = DataLoader(val_data, shuffle=False, num_workers=8, batch_size=config["val_batch_size"], collate_fn=collate_clip)
 
     # fit model
     trainer = Trainer(max_epochs=4, profiler="simple", accumulate_grad_batches=4)

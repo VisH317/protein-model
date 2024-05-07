@@ -3,3 +3,6 @@ ProteinKG25
 **/*.obo
 **/*.pkl
 **/__pycache__
+KeAP
+keap_data
+lightning_logs

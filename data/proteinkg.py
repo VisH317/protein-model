@@ -1,3 +1,4 @@
+import os
 import torch
 from torch import Tensor
 from torch.utils.data import Dataset
@@ -6,7 +7,7 @@ from typing import List, Tuple
 
 
 def mask(prot: List[str]):
-    t = torch.randint(0, 5, (len(prot)))
+    t = torch.randint(5, tuple([len(prot)]))
     for i in range(len(prot)):
         if t[i] == 0: prot[i] = "[MASK]"
     
@@ -27,8 +28,8 @@ def collate(li: List[Tuple[List[str], str, str, List[str], Tensor]]) -> Tuple[Li
 
 
 def collate_clip(li: List[Tuple[List[str], str, str, List[str], Tensor]]) -> Tuple[List[List[str]], List[str], Tensor]:
-    prot_li = (item[0] for item in li)
-    text_li = (item[1] + item[2] for item in li)
+    prot_li = [item[0] for item in li]
+    text_li = [item[1] + item[2] for item in li]
     t = torch.eye(len(prot_li))
 
     return prot_li, text_li, t
