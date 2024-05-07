@@ -1,6 +1,7 @@
 import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
+from transformers import AutoTokenizer
 import lightning as L
 from base_models.transformer import BertModel, text_model_id, prot_model_id
 from typing import Mapping, Any
@@ -42,8 +43,20 @@ class ProtCLIPLit(L.LightningModule):
         self.clip_transform = clip_transform.to(device=device)
         self.lr = lr
 
+
+    def forward(self, input) -> Tensor:
+        prot, text = input
+
+        prot = self.prot_model(prot)
+        text = self.text_model(text)
+
+        clip_out = self.clip_transform(prot, text)
+        return clip_out
+
+
     def training_step(self, batch, batch_idx):
         prot, text, target = batch
+
         prot = self.prot_model(prot)
         text = self.text_model(text)
         clip_out = self.clip_transform(prot, text)
@@ -52,9 +65,11 @@ class ProtCLIPLit(L.LightningModule):
 
         return loss
     
+
     def configure_optimizers(self):
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.lr)
         return optimizer
+    
     
     def validation_step(self, batch) -> Tensor | Mapping[str, Any] | None:
         prot, text, target = batch

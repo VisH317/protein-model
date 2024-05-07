@@ -1,5 +1,6 @@
 import torch
 from transformers import AutoModel, AutoTokenizer
+from typing import List
 
 # these are base BERT models to test with at first. These are being used for their lower compuational complexity and matching with original KeAP architecture
 text_model_id = "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext"
