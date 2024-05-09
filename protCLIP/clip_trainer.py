@@ -104,7 +104,10 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 scheduler.step()
             
             train_losses.append(loss.item())
+            wandb.log({"train_loss": loss.item()})
             bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
+
+            if ix >= config["max_epoch_len"]: break
 
             # validation loop
             if ix % 16 == 0:
@@ -122,6 +125,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                     loss = criterion(out, target)
 
                     val_losses.append(loss.item())
+                    wandb.log({"val_loss": loss.item()})
                     bar.set_description(f"Epoch: {epoch+1}, Loss: {round(train_losses[-1], 4)}, Val loss: {round(val_losses[-1], 4)}")
         
         exp_sched.step()
