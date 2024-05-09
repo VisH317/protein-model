@@ -74,7 +74,7 @@ class ProtCLIPLit(L.LightningModule):
         text = self.text_model(text)
         clip_out = self.clip_transform(prot, text)
         loss = F.mse_loss(clip_out, target)
-        self.log("train loss: ", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log("train loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
 
         return loss
     
@@ -91,5 +91,5 @@ class ProtCLIPLit(L.LightningModule):
         clip_out = self.clip_transform(prot, text)
 
         loss = F.mse_loss(clip_out, target)
-        self.log("val loss: ", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log("val loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
 
