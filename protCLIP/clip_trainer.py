@@ -1,7 +1,7 @@
 import torch
 from protCLIP.arch import ProtCLIPLit, ProtCLIP
 from torch.utils.data import DataLoader
-from data.proteinkg import ProteinKG25, collate_clip
+from data.proteinkg import ProteinKG25, collate_clip_combine_text
 from lightning import Trainer
 from typing import Dict, Any
 
@@ -30,8 +30,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     val_data = ProteinKG25(data_config["val_data_file"])
 
     # create loaders
-    train_loader = DataLoader(train_data, shuffle=False, num_workers=8, batch_size=config["batch_size"], collate_fn=collate_clip)
-    val_loader = DataLoader(val_data, shuffle=False, num_workers=8, batch_size=config["val_batch_size"], collate_fn=collate_clip)
+    train_loader = DataLoader(train_data, shuffle=False, num_workers=8, batch_size=config["batch_size"], collate_fn=collate_clip_combine_text)
+    val_loader = DataLoader(val_data, shuffle=False, num_workers=8, batch_size=config["val_batch_size"], collate_fn=collate_clip_combine_text)
 
     # fit model
     trainer = Trainer(max_epochs=4, profiler="simple", accumulate_grad_batches=4)
