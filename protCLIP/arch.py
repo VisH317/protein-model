@@ -1,35 +1,48 @@
 import torch
 from torch import nn, Tensor
 import torch.nn.functional as F
-from transformers import AutoTokenizer
 import lightning as L
 from base_models.transformer import BertModel, text_model_id, prot_model_id
 from typing import Mapping, Any
+from protCLIP.transforms import MLPTransform, SelfAttentionTransform, CrossGatedSelfAttentionTransform, CrossGatedTransformer
 
 
 class ProtCLIP(nn.Module):
-    def __init__(self, d_model: int, d_text: int, d_clip: int, d_inter: int = None):
+    def __init__(self, d_prot: int, d_text: int, d_clip: int, d_inter: int = None):
         super().__init__()
 
-        self.d_model = d_model
+        self.d_prot = d_prot
         self.d_clip = d_clip
         self.d_inter = d_inter if d_inter is not None else 4 * d_clip
 
-        self.lin = nn.Sequential(
-            nn.Linear(d_model, self.d_inter),
-            nn.Linear(self.d_inter, d_clip)
-        )
+        self.prot = MLPTransform(self.d_prot, self.d_inter, self.d_clip)
 
-        self.lin2 = nn.Sequential(
-            nn.Linear(d_text, self.d_inter),
-            nn.Linear(self.d_inter, d_clip)
-        )
+        self.text = MLPTransform(d_text, self.d_inter, self.d_clip)
+
+        self.norm = nn.LayerNorm(d_clip)
+        self.act = nn.Sigmoid()
 
     def forward(self, input_prot: Tensor, input_text: Tensor) -> Tensor:
-        prot = self.lin(input_prot)
-        text = self.lin2(input_text)
+        prot = self.prot(input_prot)
+        text = self.text(input_text)
 
-        return F.sigmoid(prot @ text.T)
+        return self.act(self.norm(prot @ text.t()))
+
+class GatedProtCLIP(nn.Module):
+    def __init__(self, d_prot: int, d_text: int, d_clip: int, n_enc: int, d_inter: int | None = None, use_gate_act: bool = False) -> None:
+        super().__init__()
+
+        self.prot = CrossGatedTransformer(n_enc, d_prot, d_text, d_clip, d_inter, use_gate_act)
+        self.text = CrossGatedTransformer(n_enc, d_text, d_prot, d_clip, d_inter, use_gate_act)
+
+        self.norm = nn.LayerNorm(d_clip)
+        self.act = nn.Sigmoid()
+
+    def forward(self, input_prot: Tensor, input_text: Tensor) -> Tensor:
+        prot = self.prot(input_prot, input_text)
+        text = self.text(input_text, input_prot)
+
+        return self.act(self.norm(prot @ text.t()))
 
 
 class ProtCLIPLit(L.LightningModule):

@@ -40,3 +40,4 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     # save parameters
     torch.save(clip.state_dict(), "keap.pth")
 
+
