@@ -15,7 +15,7 @@ class MLPTransform(nn.Module):
             nn.Linear(d_model, self.d_inter),
             nn.SiLU(),
             nn.Linear(self.d_inter, d_clip),
-            RMSNorm(d_model)
+            RMSNorm(d_clip)
         )
 
     def forward(self, x: Tensor) -> Tensor: return self.mlp(x)
