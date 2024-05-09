@@ -60,12 +60,14 @@ def train_clip_old(config: Dict[str, Any] = default_config, data_config: Dict[st
 
 def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, Any] = default_data_config):
     
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
     wandb.login(key=WANDB_KEY)
     wandb.init(project="protCLIP")
 
     prot_model = BertModel(prot_model_id)
     text_model = BertModel(text_model_id)
-    clip = ProtCLIP(config["d_model"], config["d_text"], config["d_clip"], config["d_inter"])
+    clip = ProtCLIP(config["d_model"], config["d_text"], config["d_clip"], config["d_inter"]).to(device=device)
 
     # set up data
     train_data = ProteinKG25(data_config["train_data_file"])
