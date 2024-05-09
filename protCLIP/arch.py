@@ -19,14 +19,14 @@ class ProtCLIP(nn.Module):
 
         self.text = MLPTransform(d_text, self.d_inter, self.d_clip)
 
-        self.norm = nn.LayerNorm(d_clip)
+        # self.norm = nn.LayerNorm(d_clip)
         self.act = nn.Sigmoid()
 
     def forward(self, input_prot: Tensor, input_text: Tensor) -> Tensor:
         prot = self.prot(input_prot)
         text = self.text(input_text)
 
-        return self.act(self.norm(prot @ text.t()))
+        return self.act(prot @ text.t())
 
 class GatedProtCLIP(nn.Module):
     def __init__(self, d_prot: int, d_text: int, d_clip: int, n_enc: int, d_inter: int | None = None, use_gate_act: bool = False) -> None:

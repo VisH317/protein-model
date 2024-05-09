@@ -12,10 +12,10 @@ class MLPTransform(nn.Module):
         self.d_clip = d_clip
 
         self.mlp = nn.Sequential(
-            RMSNorm(d_model),
             nn.Linear(d_model, self.d_inter),
             nn.SiLU(),
-            nn.Linear(self.d_inter, d_clip)
+            nn.Linear(self.d_inter, d_clip),
+            RMSNorm(d_model)
         )
 
     def forward(self, x: Tensor) -> Tensor: return self.mlp(x)
