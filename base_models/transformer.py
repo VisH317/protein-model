@@ -4,7 +4,7 @@ from typing import List
 
 # these are base BERT models to test with at first. These are being used for their lower compuational complexity and matching with original KeAP architecture
 text_model_id = "microsoft/BiomedNLP-BiomedBERT-base-uncased-abstract-fulltext"
-prot_model_id = "Rostlab/prot_bert"
+prot_model_id = "yarongef/DistilProtBert"
 
 class BertModel:
     def __init__(self, model_id, max_len: int = 2048):
