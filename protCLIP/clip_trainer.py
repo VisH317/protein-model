@@ -20,7 +20,7 @@ default_config = {
     "d_clip": 512,
     "d_inter": None,
     "n_epochs": 3,
-    "max_epoch_len": 60000,
+    "max_epoch_len": 30000,
     "lr": 3e-4,
     "batch_size": 4,
     "grad_accum": 32,
@@ -90,7 +90,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         val_loader_iter = iter(val_loader)
 
         opt.zero_grad()
-        for ix, data in (bar := tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}, Loss: N/A, Val Loss: {val_losses}")):
+        for ix, data in (bar := tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}")):
             prot, rel, target = data
 
             prot_emb = prot_model(prot)
@@ -105,14 +105,14 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 opt.zero_grad()
                 scheduler.step()
             
-            train_losses.append(loss.item())
+            # train_losses.append(loss.item())
             wandb.log({"train_loss": loss.item()})
-            bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
+            # bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
 
             if ix >= config["max_epoch_len"]: break
 
             # validation loop
-            if ix % 16 == 0:
+            if ix % 32 == 0:
                 with torch.no_grad():
                     try:
                         prot, rel, target = next(val_loader_iter)
@@ -126,9 +126,9 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                     out = clip(prot_emb, text_emb)
                     loss = criterion(out, target)
 
-                    val_losses.append(loss.item())
+                    # val_losses.append(loss.item())
                     wandb.log({"val_loss": loss.item()})
-                    bar.set_description(f"Epoch: {epoch+1}, Loss: {round(train_losses[-1], 4)}, Val loss: {round(val_losses[-1], 4)}")
+                    # bar.set_description(f"Epoch: {epoch+1}, Loss: {round(train_losses[-1], 4)}, Val loss: {round(val_losses[-1], 4)}")
         
         exp_sched.step()
     
