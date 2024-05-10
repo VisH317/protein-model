@@ -23,9 +23,11 @@ default_config = {
     "max_epoch_len": 30000,
     "lr": 3e-4,
     "batch_size": 4,
-    "grad_accum": 32,
+    "grad_accum": 16,
     "val_batch_size": 4
 }
+
+# NOTE: I NEED TO CHECK HOW BCE IS COMPUTED, BECUASE THE COMPUTATION HAS TO BE 1-to-1
 
 default_data_config = {
     "train_data_file": "./data/proteinkg25_parsed_train.pkl",
@@ -90,7 +92,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         val_loader_iter = iter(val_loader)
 
         opt.zero_grad()
-        for ix, data in (bar := tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}")):
+        for ix, data in tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}"):
             prot, rel, target = data
 
             prot_emb = prot_model(prot)
