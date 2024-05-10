@@ -20,10 +20,10 @@ default_config = {
     "d_clip": 512,
     "d_inter": None,
     "n_epochs": 3,
-    "max_epoch_len": 10000,
+    "max_epoch_len": 60000,
     "lr": 3e-4,
-    "batch_size": 8,
-    "grad_accum": 16,
+    "batch_size": 4,
+    "grad_accum": 32,
     "val_batch_size": 4
 }
 
