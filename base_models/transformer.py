@@ -38,5 +38,5 @@ class BertModel:
     def __call__(self, input: str):
         tokens = self.prot_tokenizer(input, return_tensors="pt", max_length=self.max_len, padding=True, truncation=True).to(device=self.device) # TODO: Set up attention mask here
         output = self.prot_model(**tokens)
-        return output.hidden_states
+        return output.hidden_states[0]
     
