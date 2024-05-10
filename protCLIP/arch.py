@@ -19,7 +19,7 @@ class ProtCLIP(nn.Module):
         self.prot_pooler = BertPooler(self.d_prot)
         self.prot = MLPTransform(self.d_prot, self.d_inter, self.d_clip)
 
-        self.text_pooler = BertPooler(self.d_prot)
+        self.text_pooler = BertPooler(d_text)
         self.text = MLPTransform(d_text, self.d_inter, self.d_clip)
 
         # self.norm = nn.LayerNorm(d_clip)
