@@ -31,6 +31,7 @@ class BertModel:
 
         self.prot_tokenizer = AutoTokenizer.from_pretrained(model_id, output_hidden_states=True)
         self.prot_model = AutoModel.from_pretrained(model_id, output_hidden_states=True).to(device=self.device)
+        self.prot_model.eval()
 
         self.needs_custom_pooler = needs_custom_pooler
         self.max_len = max_len

@@ -95,8 +95,9 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         for ix, data in tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}"):
             prot, rel, target = data
 
-            prot_emb = prot_model(prot)
-            text_emb = text_model(rel)
+            with torch.no_grad():
+                prot_emb = prot_model(prot)
+                text_emb = text_model(rel)
             out = clip(prot_emb, text_emb)
 
             loss = criterion(out, target)
