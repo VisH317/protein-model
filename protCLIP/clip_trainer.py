@@ -10,6 +10,7 @@ import wandb
 from lightning.pytorch.loggers import WandbLogger
 from tqdm import tqdm
 import pickle
+import time
 
 # yo if you see this I'm doing this because I dont feel like setting up an env file in kaggle ok so please don't copy it :)
 WANDB_KEY = "b2e79ea06ca3e1963c1b930a9944bce6938bbb59"
@@ -92,15 +93,23 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         val_loader_iter = iter(val_loader)
 
         opt.zero_grad()
-        for ix, data in tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}"):
+        for ix, data in (bar := tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}")):
             prot, rel, target = data
+
+            print("prot: ", prot)
+            print("text: ", rel)
+            print("target: ", target)
 
             with torch.no_grad():
                 prot_emb = prot_model(prot)
                 text_emb = text_model(rel)
+                print("prot_emb: ", prot_emb)
+                print("text_emb: ", text_emb)
             out = clip(prot_emb, text_emb)
 
+            print("out: ", out)
             loss = criterion(out, target)
+            print("loss: ", loss)
             loss.backward()
 
             if (ix+1) % config["grad_accum"] == 0:
@@ -108,11 +117,14 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 opt.zero_grad()
                 scheduler.step()
             
-            # train_losses.append(loss.item())
+            train_losses.append(loss.item())
             wandb.log({"train_loss": loss.item()})
-            # bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
+            wandb.log
+            bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
 
             if ix >= config["max_epoch_len"]: break
+
+            time.sleep(3)
 
             # validation loop
             if ix % 32 == 0:
