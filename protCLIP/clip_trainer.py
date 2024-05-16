@@ -79,7 +79,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     # train + optim
     crit_text = nn.CrossEntropyLoss()
     crit_prot = nn.CrossEntropyLoss()
-    opt = torch.optim.AdamW(clip.parameters(), config["lr"], betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2)
+    opt = torch.optim.Adam(clip.parameters(), config["lr"], betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2)
     scheduler = torch.optim.lr_scheduler.LinearLR(opt, start_factor=0.5, total_iters=config["batch_size"]*config["max_epoch_len"] // (15 * config["grad_accum"]))
     exp_sched = torch.optim.lr_scheduler.ExponentialLR(opt, gamma=0.9)
 

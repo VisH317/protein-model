@@ -1,12 +1,14 @@
 import torch
+from torch import nn
 from protCLIP.arch import ProtCLIP
 import time
 
 if __name__ == "__main__":
 
     clip = ProtCLIP(16, 16, 8, 16)
-    crit = torch.nn.BCELoss()
-    opt = torch.optim.AdamW(clip.parameters(), lr=0.01)
+    c = torch.nn.CrossEntropyLoss()
+    c2 = torch.nn.CrossEntropyLoss()
+    opt = torch.optim.AdamW(clip.parameters(), lr=0.1)
 
     z = torch.rand(2, 2, 16)
     t = torch.rand(2, 2, 16)
@@ -15,12 +17,14 @@ if __name__ == "__main__":
 
         opt.zero_grad()
 
-        out = clip(z, t)
+        out, out2 = clip(z, t)
 
         # crit.register_backward_hook(lambda grad: print(grad))
-        loss = crit(out, torch.as_tensor([[1, 0.5], [0.5, 0]]))
+        target = torch.arange(2, dtype=torch.long)
+        loss = (c(out, target) + c2(out2, target))/2
 
-        print(out)
+        print(out.softmax(dim=-1))
+        print(loss)
 
         loss.backward()
         opt.step()
