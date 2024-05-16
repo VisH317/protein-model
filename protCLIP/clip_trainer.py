@@ -97,18 +97,17 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         for ix, data in (bar := tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}")):
             prot, rel, _target = data
 
-            print("prot: ", prot)
-            print("text: ", rel)
+            # print("prot: ", prot)
+            # print("text: ", rel)
             # print("target: ", target)
 
             with torch.no_grad():
                 prot_emb = prot_model(prot)
                 text_emb = text_model(rel)
-                print("prot_emb: ", prot_emb)
-                print("text_emb: ", text_emb)
+                # print("prot_emb: ", prot_emb)
+                # print("text_emb: ", text_emb)
             out_prot, out_text = clip(prot_emb, text_emb)
 
-            print("out: ", out)
             target = torch.arange(out_prot.size()[0], dtype=torch.long, device=device)
             loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
             print("loss: ", loss)
@@ -134,16 +133,17 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
             if ix % 32 == 0:
                 with torch.no_grad():
                     try:
-                        prot, rel, target = next(val_loader_iter)
+                        prot, rel, _target = next(val_loader_iter)
                     except:
                         val_loader = DataLoader(val_data, config["val_batch_size"], shuffle=True)
                         val_loader_iter = iter(val_loader)
-                        prot, rel, target = next(val_loader_iter)
+                        prot, rel, _target = next(val_loader_iter)
                     
                     prot_emb = prot_model(prot)
                     text_emb = text_model(rel)
-                    out = clip(prot_emb, text_emb)
-                    # loss = criterion(out, target)
+                    target = torch.arange(prot_emb.size()[0], dtype=torch.long, device=device)
+                    out_prot, out_text = clip(prot_emb, text_emb)
+                    loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
 
                     # val_losses.append(loss.item())
                     wandb.log({"val_loss": loss.item()})
