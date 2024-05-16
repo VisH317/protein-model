@@ -32,11 +32,11 @@ class ProtCLIP(nn.Module):
         prot = self.prot_pooler(input_prot)
         text = self.text_pooler(input_text)
 
-        prot = self.prot(prot)
-        text = self.text(text)
-
         print("protbuhr: ", prot)
         print("textbruh: ", text)
+
+        prot = self.prot(prot)
+        text = self.text(text)
 
         prot_o = prot.norm(dim=-1, keepdim=True)
         text_o = text.norm(dim=-1, keepdim=True)
