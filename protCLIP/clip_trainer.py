@@ -97,6 +97,13 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         for ix, data in (bar := tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}")):
             prot, rel, _target = data
 
+            for p in prot:
+                print(p)
+            
+            print("rel: ")
+            for r in rel:
+                print(r)
+
             # print("prot: ", prot)
             # print("text: ", rel)
             # print("target: ", target)
