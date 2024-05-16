@@ -22,7 +22,7 @@ default_config = {
     "d_inter": None,
     "n_epochs": 3,
     "max_epoch_len": 10000,
-    "lr": 9e-5,
+    "lr": 3e-4,
     "batch_size": 8,
     "grad_accum": 1,
     "val_batch_size": 4
@@ -80,7 +80,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     crit_text = nn.CrossEntropyLoss()
     crit_prot = nn.CrossEntropyLoss()
     opt = torch.optim.Adam(clip.parameters(), config["lr"], betas=(0.9, 0.98), eps=1e-6, weight_decay=0.2)
-    scheduler = torch.optim.lr_scheduler.LinearLR(opt, start_factor=0.5, total_iters=config["batch_size"]*config["max_epoch_len"] // (15 * config["grad_accum"]))
+    # scheduler = torch.optim.lr_scheduler.LinearLR(opt, start_factor=0.5, total_iters=config["batch_size"]*config["max_epoch_len"] // (15 * config["grad_accum"]))
     exp_sched = torch.optim.lr_scheduler.ExponentialLR(opt, gamma=0.9)
 
     val_losses = [4]
@@ -108,17 +108,17 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 # print("text_emb: ", text_emb)
             out_prot, out_text = clip(prot_emb, text_emb)
             print("bruh: ", out_prot)
-            print("bruh2 text: ", out_text)
+            # print("bruh2 text: ", out_text)
             target = torch.arange(out_prot.size()[0], dtype=torch.long, device=device)
             loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
-            print("loss: ", loss)
+            # print("loss: ", loss)
             loss.backward()
 
 
             if (ix+1) % config["grad_accum"] == 0:
                 opt.step()
                 opt.zero_grad()
-                scheduler.step()
+                # scheduler.step()
             
             train_losses.append(loss.item())
             wandb.log({"train_loss": loss.item()})
