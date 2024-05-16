@@ -23,8 +23,8 @@ default_config = {
     "n_epochs": 3,
     "max_epoch_len": 10000,
     "lr": 9e-5,
-    "batch_size": 32,
-    "grad_accum": 8,
+    "batch_size": 8,
+    "grad_accum": 1,
     "val_batch_size": 4
 }
 
@@ -107,8 +107,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 # print("prot_emb: ", prot_emb)
                 # print("text_emb: ", text_emb)
             out_prot, out_text = clip(prot_emb, text_emb)
-            print("bruh: ", out_prot.softmax(dim=-1))
-            print("bruh2 text: ", out_text.softmax(dim=-1))
+            print("bruh: ", out_prot)
+            print("bruh2 text: ", out_text)
             target = torch.arange(out_prot.size()[0], dtype=torch.long, device=device)
             loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
             print("loss: ", loss)
@@ -127,7 +127,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
 
             if ix >= config["max_epoch_len"]: break
 
-            time.sleep(3)
+            # time.sleep(3)
 
             # validation loop
             if ix % 32 == 0:
