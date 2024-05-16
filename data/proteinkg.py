@@ -38,7 +38,7 @@ def collate_clip(li: List[Tuple[List[str], str, str, List[str], Tensor]]) -> Tup
 def collate_clip_combine_text(li: List[Tuple[List[str], str, str, List[str], Tensor]]) -> Tuple[List[List[str]], List[str], Tensor]:
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     prot_li = [item[0] for item in li]
-    rel_li = [item[1] + " " + item[2] for item in li]
+    rel_li = [" ".join(item[1].split("_")) + " " + item[2] for item in li]
     t = torch.eye(len(prot_li)).to(device=device)
 
     return prot_li, rel_li, t

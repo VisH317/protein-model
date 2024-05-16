@@ -112,6 +112,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
             print("loss: ", loss)
             loss.backward()
 
+            print(out.dtype)
+
             if (ix+1) % config["grad_accum"] == 0:
                 opt.step()
                 opt.zero_grad()
