@@ -89,8 +89,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     for epoch in range(config["n_epochs"]):
 
         # setup loaders
-        train_loader = DataLoader(train_data, shuffle=False, batch_size=config["batch_size"], collate_fn=collate_clip_combine_text)
-        val_loader = DataLoader(val_data, shuffle=False, batch_size=config["val_batch_size"], collate_fn=collate_clip_combine_text)
+        train_loader = DataLoader(train_data, shuffle=True, batch_size=config["batch_size"], collate_fn=collate_clip_combine_text)
+        val_loader = DataLoader(val_data, shuffle=True, batch_size=config["val_batch_size"], collate_fn=collate_clip_combine_text)
         val_loader_iter = iter(val_loader)
 
         opt.zero_grad()
@@ -134,7 +134,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
 
             if ix >= config["max_epoch_len"]: break
 
-            # time.sleep(3)
+            time.sleep(2)
 
             # validation loop
             if ix % 32 == 0:
