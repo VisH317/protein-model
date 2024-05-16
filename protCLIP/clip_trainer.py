@@ -23,7 +23,7 @@ default_config = {
     "n_epochs": 3,
     "max_epoch_len": 10000,
     "lr": 3e-4,
-    "batch_size": 8,
+    "batch_size": 4,
     "grad_accum": 1,
     "val_batch_size": 4
 }
