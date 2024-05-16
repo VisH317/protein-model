@@ -107,7 +107,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 # print("prot_emb: ", prot_emb)
                 # print("text_emb: ", text_emb)
             out_prot, out_text = clip(prot_emb, text_emb)
-
+            print("bruh: ", out_prot.softmax(dim=-1))
+            print("bruh2 text: ", out_text.softmax(dim=-1))
             target = torch.arange(out_prot.size()[0], dtype=torch.long, device=device)
             loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
             print("loss: ", loss)
