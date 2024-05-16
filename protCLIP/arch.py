@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 from torch import nn, Tensor
 import torch.nn.functional as F
 from base_models.transformer import BertPooler
@@ -25,6 +26,8 @@ class ProtCLIP(nn.Module):
         # self.norm = nn.LayerNorm(d_clip)
         self.act = nn.Sigmoid()
 
+        self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
+
     def forward(self, input_prot: Tensor, input_text: Tensor) -> Tensor:
         prot = self.prot_pooler(input_prot)
         text = self.text_pooler(input_text)
@@ -35,7 +38,13 @@ class ProtCLIP(nn.Module):
         prot = self.prot(prot)
         text = self.text(text)
 
-        return self.act(prot @ text.t())
+        prot /= prot.norm(dim=-1, keepdim=True)
+        text /= text.norm(dim=-1, keepdim=True)
+
+        logit_scale = self.logit_scale.exp()
+        out = logit_scale * (prot @ text.t())
+
+        return out, out.t()
 
 class GatedProtCLIP(nn.Module):
     def __init__(self, d_prot: int, d_text: int, d_clip: int, n_enc: int, d_inter: int | None = None, use_gate_act: bool = False) -> None:

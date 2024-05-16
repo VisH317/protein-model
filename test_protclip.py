@@ -6,13 +6,14 @@ if __name__ == "__main__":
 
     clip = ProtCLIP(16, 16, 8, 16)
     crit = torch.nn.BCELoss()
-    opt = torch.optim.AdamW(clip.parameters())
+    opt = torch.optim.AdamW(clip.parameters(), lr=0.01)
+
+    z = torch.rand(2, 2, 16)
+    t = torch.rand(2, 2, 16)
 
     while True:
 
         opt.zero_grad()
-        z = torch.rand(2, 2, 16)
-        t = torch.rand(2, 2, 16)
 
         out = clip(z, t)
 
