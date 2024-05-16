@@ -114,14 +114,14 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
 
             print(out.dtype)
 
-            if (ix+1) % config["grad_accum"] == 0:
-                opt.step()
-                opt.zero_grad()
-                scheduler.step()
+            # if (ix+1) % config["grad_accum"] == 0:
+            opt.step()
+            opt.zero_grad()
+            # scheduler.step()
             
             train_losses.append(loss.item())
             wandb.log({"train_loss": loss.item()})
-            wandb.log
+            # wandb.log
             bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
 
             if ix >= config["max_epoch_len"]: break
