@@ -100,9 +100,6 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
             for p in prot:
                 print(p)
             
-            print("rel: ")
-            for r in rel:
-                print(r)
 
             # print("prot: ", prot)
             # print("text: ", rel)
@@ -110,6 +107,9 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
 
             with torch.no_grad():
                 prot_emb = prot_model(prot)
+                print("rel: ")
+                for r in rel:
+                    print(r)
                 text_emb = text_model(rel)
                 # print("prot_emb: ", prot_emb)
                 # print("text_emb: ", text_emb)
