@@ -35,6 +35,9 @@ class ProtCLIP(nn.Module):
         prot = self.prot(prot)
         text = self.text(text)
 
+        print("protbuhr: ", prot)
+        print("textbruh: ", text)
+
         prot_o = prot.norm(dim=-1, keepdim=True)
         text_o = text.norm(dim=-1, keepdim=True)
 
