@@ -17,7 +17,7 @@ if __name__ == "__main__":
         out = clip(z, t)
 
         # crit.register_backward_hook(lambda grad: print(grad))
-        loss = crit(out, torch.as_tensor([[0.5, 0.5], [0.5, 0.5]]))
+        loss = crit(out, torch.as_tensor([[1, 0.5], [0.5, 0]]))
 
         print(out)
 

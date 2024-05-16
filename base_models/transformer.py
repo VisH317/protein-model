@@ -22,7 +22,7 @@ class BertPooler(nn.Module):
 
     def forward(self, hidden_states: Tensor) -> Tensor:
         if self.use_norm: hidden_states = self.norm(hidden_states)
-        return self.act(self.lin(hidden_states[:, 0]))
+        return self.act(self.lin(hidden_states[:, -1]))
 
 
 class BertModel:

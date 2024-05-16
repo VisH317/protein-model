@@ -26,8 +26,14 @@ class ProtCLIP(nn.Module):
         self.act = nn.Sigmoid()
 
     def forward(self, input_prot: Tensor, input_text: Tensor) -> Tensor:
-        prot = self.prot(self.prot_pooler(input_prot))
-        text = self.text(self.text_pooler(input_text))
+        prot = self.prot_pooler(input_prot)
+        text = self.text_pooler(input_text)
+
+        print("prot: ", prot)
+        print("text: ", text)
+
+        prot = self.prot(prot)
+        text = self.text(text)
 
         return self.act(prot @ text.t())
 
