@@ -20,10 +20,10 @@ class BertPooler(nn.Module):
 
         if self.use_norm: self.norm = RMSNorm(d_model)
 
-    def forward(self, hidden_states: Tensor) -> Tensor:
+    def forward(self, hidden_states: Tensor, ends: list) -> Tensor:
         if self.use_norm: hidden_states = self.norm(hidden_states)
         # print("testing besting: ", hidden_states[:, -1], hidden_states[:, -1].size())
-        return self.act(self.lin(hidden_states[:, -1]))
+        return self.act(self.lin(hidden_states[:, ends]))
 
 
 class BertModel:
@@ -38,7 +38,7 @@ class BertModel:
         self.max_len = max_len
     
     def __call__(self, input: str):
-        tokens = self.prot_tokenizer(input, return_tensors="pt", max_length=self.max_len, padding=True, truncation=True).to(device=self.device) # TODO: Set up attention mask here
+        tokens = self.prot_tokenizer(input, return_tensors="pt", padding=True).to(device=self.device) # TODO: Set up attention mask here
         print(tokens.input_ids)
         output = self.prot_model(**tokens)
         return output.hidden_states[0]

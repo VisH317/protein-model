@@ -28,9 +28,9 @@ class ProtCLIP(nn.Module):
 
         self.logit_scale = nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
-    def forward(self, input_prot: Tensor, input_text: Tensor) -> Tensor:
-        prot = self.prot_pooler(input_prot)
-        text = self.text_pooler(input_text)
+    def forward(self, input_prot: Tensor, input_text: Tensor, prot_ends: list, text_ends: list) -> Tensor:
+        prot = self.prot_pooler(input_prot, prot_ends)
+        text = self.text_pooler(input_text, text_ends)
 
         # print("protbuhr: ", prot)
         # print("textbruh: ", text)
