@@ -97,27 +97,15 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         for ix, data in (bar := tqdm(enumerate(train_loader), total=config["max_epoch_len"], desc=f"Epoch: {epoch+1}")):
             prot, rel, text_ends, prot_ends = data
 
-            for p in prot:
-                print(p)
-
-            # print("prot: ", prot)
-            # print("text: ", rel)
-            # print("target: ", target)
-
             with torch.no_grad():
                 prot_emb = prot_model(prot)
-                print("rel: ")
-                for r in rel:
-                    print(r)
                 text_emb = text_model(rel)
-                # print("prot_emb: ", prot_emb)
-                # print("text_emb: ", text_emb)
+
             out_prot, out_text = clip(prot_emb, text_emb, prot_ends, text_ends)
             print("bruh: ", out_prot)
             # print("bruh2 text: ", out_text)
             target = torch.arange(out_prot.size()[0], dtype=torch.long, device=device)
             loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
-            # print("loss: ", loss)
             loss.backward()
 
 
