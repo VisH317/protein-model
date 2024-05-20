@@ -91,6 +91,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     for epoch in range(config["n_epochs"]):
 
         # setup loaders
+        print(config["val_batch_size"])
         train_loader = DataLoader(train_data, shuffle=True, batch_size=config["batch_size"], collate_fn=collate_clip_combine_text)
         val_loader = DataLoader(val_data, shuffle=True, batch_size=config["val_batch_size"], collate_fn=collate_clip_combine_text)
         val_loader_iter = iter(val_loader)
@@ -104,7 +105,6 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 text_emb = text_model(rel)
 
             out_prot, out_text = clip(prot_emb, text_emb, prot_ends, text_ends)
-            print("bruh: ", out_prot)
             # print("bruh2 text: ", out_text)
             target = torch.arange(out_prot.size()[0], dtype=torch.long, device=device)
             loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
@@ -130,8 +130,9 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 with torch.no_grad():
                     try:
                         prot, rel, _target = next(val_loader_iter)
-                    except:
-                        val_loader = DataLoader(val_data, config["val_batch_size"], shuffle=True)
+                    except Exception as error:
+                        print("erro: ", error)
+                        val_loader = DataLoader(val_data, config["val_batch_size"], shuffle=True, collate_fn=collate_clip_combine_text)
                         val_loader_iter = iter(val_loader)
                         prot, rel, _target = next(val_loader_iter)
                     
@@ -150,5 +151,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     torch.save(clip.state_dict(), "clip.pt")
     with open("loss.pkl", "wb") as f:
         pickle.dump([train_losses, val_losses], f)
+    
+    wandb.save()
     
     return clip
