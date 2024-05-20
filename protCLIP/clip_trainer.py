@@ -72,6 +72,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     text_model = BertModel(text_model_id)
     clip = ProtCLIP(config["d_model"], config["d_text"], config["d_clip"], config["d_inter"]).to(device=device)
 
+    wandb.watch(clip, log="all")
+
     # set up data
     train_data = ProteinKG25(data_config["train_data_file"])
     val_data = ProteinKG25(data_config["val_data_file"])
