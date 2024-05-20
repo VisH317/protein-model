@@ -41,8 +41,8 @@ def collate_clip_combine_text(li: List[Tuple[List[str], str, str, List[str], Ten
     rel_li = [" ".join(item[1].split("_")) + " " + item[2] for item in li]
     t = torch.eye(len(prot_li)).to(device=device)
     
-    text_ends = torch.as_tensor([len(rel.split())-1 for rel in rel_li])
-    prot_ends = torch.as_tensor([len(prot.split())-1 for prot in prot_li])
+    text_ends = [len(rel.split())-1 for rel in rel_li]
+    prot_ends = [len(prot.split())-1 for prot in prot_li]
 
     return prot_li, rel_li, text_ends, prot_ends
 
