@@ -30,7 +30,7 @@ class BertModel:
     def __init__(self, model_id, max_len: int = 2048, needs_custom_pooler: bool = False):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-        self.prot_tokenizer = AutoTokenizer.from_pretrained(model_id, output_hidden_states=True)
+        self.prot_tokenizer = AutoTokenizer.from_pretrained(model_id, output_hidden_states=True, max_len=1024)
         self.prot_model = AutoModel.from_pretrained(model_id, output_hidden_states=True).to(device=self.device)
         self.prot_model.eval()
 
@@ -38,7 +38,7 @@ class BertModel:
         self.max_len = max_len
     
     def __call__(self, input: str):
-        tokens = self.prot_tokenizer(input, return_tensors="pt", padding=True).to(device=self.device) # TODO: Set up attention mask here
+        tokens = self.prot_tokenizer(input, return_tensors="pt", padding=True, truncation=True, max_length=1024).to(device=self.device) # TODO: Set up attention mask here
         output = self.prot_model(**tokens)
         return output.hidden_states[0]
     
