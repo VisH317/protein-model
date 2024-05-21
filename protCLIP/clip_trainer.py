@@ -104,6 +104,8 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 prot_emb = prot_model(prot)
                 text_emb = text_model(rel)
 
+            print("broski woski: ", max(prot_ends), max(text_ends))
+
             out_prot, out_text = clip(prot_emb, text_emb, prot_ends, text_ends)
             # print("bruh2 text: ", out_text)
             target = torch.arange(out_prot.size()[0], dtype=torch.long, device=device)
