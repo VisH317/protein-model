@@ -129,17 +129,17 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
             if ix % 32 == 0:
                 with torch.no_grad():
                     try:
-                        prot, rel, _target = next(val_loader_iter)
+                        prot, rel, text_ends, prot_ends = next(val_loader_iter)
                     except Exception as error:
                         print("erro: ", error)
                         val_loader = DataLoader(val_data, config["val_batch_size"], shuffle=True, collate_fn=collate_clip_combine_text)
                         val_loader_iter = iter(val_loader)
-                        prot, rel, _target = next(val_loader_iter)
+                        prot, rel, text_ends, prot_ends = next(val_loader_iter)
                     
                     prot_emb = prot_model(prot)
                     text_emb = text_model(rel)
                     target = torch.arange(prot_emb.size()[0], dtype=torch.long, device=device)
-                    out_prot, out_text = clip(prot_emb, text_emb)
+                    out_prot, out_text = clip(prot_emb, text_emb, prot_ends, text_ends)
                     loss = (crit_prot(out_prot, target) + crit_text(out_text, target.t()))/2
 
                     # val_losses.append(loss.item())
