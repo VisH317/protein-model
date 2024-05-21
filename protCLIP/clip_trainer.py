@@ -24,7 +24,7 @@ default_config = {
     "max_epoch_len": 10000,
     "lr": 3e-4,
     "batch_size": 4,
-    "grad_accum": 1,
+    "grad_accum": 8,
     "val_batch_size": 4
 }
 
@@ -86,7 +86,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     exp_sched = torch.optim.lr_scheduler.ExponentialLR(opt, gamma=0.9)
 
     val_losses = [4]
-    train_losses = []
+    train_losses = [1]
 
     for epoch in range(config["n_epochs"]):
 
@@ -116,14 +116,11 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 opt.zero_grad()
                 # scheduler.step()
             
-            train_losses.append(loss.item())
             wandb.log({"train_loss": loss.item()})
             # wandb.log
             bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
 
             if ix >= config["max_epoch_len"]: break
-
-            time.sleep(2)
 
             # validation loop
             if ix % 32 == 0:
@@ -148,7 +145,9 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
         exp_sched.step()
     
     torch.save(clip.state_dict(), "clip.pt")
-    with open("loss.pkl", "wb") as f:
-        pickle.dump([train_losses, val_losses], f)
+    # with open("loss.pkl", "wb") as f:
+    #     pickle.dump([train_losses, val_losses], f)
+
+    wandb.save("clip.pt")
     
     return clip

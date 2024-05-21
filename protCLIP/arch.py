@@ -32,17 +32,11 @@ class ProtCLIP(nn.Module):
         prot = self.prot_pooler(input_prot, prot_ends)
         text = self.text_pooler(input_text, text_ends)
 
-        # print("protbuhr: ", prot)
-        # print("textbruh: ", text)
-
         prot = self.prot(prot)
         text = self.text(text)
 
         prot_o = prot.norm(dim=-1, keepdim=True)
         text_o = text.norm(dim=-1, keepdim=True)
-
-        # print("prots: ", prot_o)
-        # print("texts: ", text_o)
 
         logit_scale = self.logit_scale.exp()
         out = logit_scale * (prot_o @ text_o.t())
