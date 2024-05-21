@@ -35,8 +35,8 @@ class ProtCLIP(nn.Module):
         prot = self.prot(prot)
         text = self.text(text)
 
-        prot_o = prot.norm(dim=-1, keepdim=True)
-        text_o = text.norm(dim=-1, keepdim=True)
+        prot_o = prot.norm(dim=-1, keepdim=True).squeeze()
+        text_o = text.norm(dim=-1, keepdim=True).squeeze()
 
         logit_scale = self.logit_scale.exp()
         out = logit_scale * (prot_o @ text_o.t())
