@@ -21,9 +21,9 @@ default_config = {
     "d_clip": 512,
     "d_inter": None,
     "n_epochs": 3,
-    "max_epoch_len": 10000,
+    "max_epoch_len": 10000, 
     "lr": 3e-4,
-    "batch_size": 4,
+    "batch_size": 8,
     "grad_accum": 8,
     "val_batch_size": 4
 }
@@ -119,7 +119,6 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
                 # scheduler.step()
             
             wandb.log({"train_loss": loss.item()})
-            # wandb.log
             bar.set_description(f"epoch: {epoch + 1}, Loss: {round(train_losses[-1], 4)}, Val Loss: {round(val_losses[-1], 4)}")
 
             if ix >= config["max_epoch_len"]: break
@@ -143,7 +142,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
 
                     # val_losses.append(loss.item())
                     wandb.log({"val_loss": loss.item()})
-                    # bar.set_description(f"Epoch: {epoch+1}, Loss: {round(train_losses[-1], 4)}, Val loss: {round(val_losses[-1], 4)}")
+                    bar.set_description(f"Epoch: {epoch+1}, Loss: {round(train_losses[-1], 4)}, Val loss: {round(val_losses[-1], 4)}")
         
         exp_sched.step()
     
