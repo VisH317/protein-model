@@ -66,7 +66,7 @@ def train_clip(config: Dict[str, Any] = default_config, data_config: Dict[str, A
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     wandb.login(key=WANDB_KEY)
-    wandb.init(project="protCLIP")
+    wandb.init(project="protCLIP", config=config)
 
     prot_model = BertModel(prot_model_id)
     text_model = BertModel(text_model_id)
